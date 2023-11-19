@@ -17,7 +17,7 @@ class SistemaMMM{
 
         Servidor(){
             estado = 0;
-            tiempo_sig_salida = 1.0e+29;
+            tiempo_sig_salida = 1.0e+30;
             tiempo_ocupado = 0.0;
             clientes_atendidos = 0;
             tiempo_ultima_salida = 0.0;
@@ -50,7 +50,7 @@ public :
 
         fprintf(resultados, "Sistema de Colas Simple (M/M/m)\n\n");
         fprintf(resultados, "Tiempo promedio de llegada: %11.3f minutos\n\n", media_entre_llegadas);
-        fprintf(resultados, "Tiempo promedio de atenciï¿½n: %16.3f minutos\n\n", media_atencion);
+        fprintf(resultados, "Tiempo promedio de atención: %16.3f minutos\n\n", media_atencion);
         fprintf(resultados, "Número de clientes: %14d\n\n", num_esperas_requerido);
         fprintf(resultados, "Número de servidores: %14d\n\n", num_servidores);
 
@@ -100,10 +100,7 @@ public :
         }
 
         for (int i = 1; i <= num_servidores; ++i) {
-            area_estado_servidor[i] = 0.0;
-            estado_servidor[i] = LIBRE;
-
-            servidores.emplace_back();
+                 servidores.emplace_back();
         }
 
         num_clientes_cola = 0;
@@ -120,7 +117,7 @@ public :
     void controltiempo(void) {
         int i;
         float min_tiempo_sig_evento = 1.0e+29;
-        float min_tiempo_sig_salida = 1.0e+30;
+        float min_tiempo_sig_salida = 1.0e+29;
 
         sig_tipo_evento = 0;
 
@@ -142,7 +139,7 @@ public :
             }
 
         if (sig_tipo_evento == 0) {
-            fprintf(resultados, "\nLa lista de eventos estï¿½ vacï¿½a %f", tiempo_simulacion);
+            fprintf(resultados, "\nLa lista de eventos está vacía %f", tiempo_simulacion);
             exit(1);
         }
 
@@ -173,13 +170,12 @@ public :
             if (num_clientes_cola < LIMITE_COLA) {
                 ++num_clientes_cola;
 
-                if (num_clientes_cola > LIMITE_COLA) {
-                    fprintf(resultados, "\nDesbordamiento del arreglo tiempo_llegada a la hora");
-                    fprintf(resultados, "%f", tiempo_simulacion);
-                    exit(2);
-                }
-
                 tiempo_llegada[num_clientes_cola] = tiempo_simulacion;
+            }
+            if (num_clientes_cola > LIMITE_COLA -1) {
+                fprintf(resultados, "\nDesbordamiento del arreglo tiempo_llegada a la hora");
+                fprintf(resultados, "%f", tiempo_simulacion);
+                exit(2);
             }
         }
     }
@@ -252,20 +248,20 @@ public :
         tiempo_ultimo_evento       = tiempo_simulacion;
 
         /* Actualiza el area bajo la funcion de numero_en_cola */
-        area_num_entra_cola      += num_clientes_cola * time_since_last_event;
+        area_num_entra_cola      +=  (float)num_clientes_cola * time_since_last_event;
 
-        /* Actualiza el ï¿½rea bajo la funciï¿½n indicadora de servidor ocupado para mï¿½ltiples servidores. */
-        for (int i = 1; i <= num_servidores; ++i) {
-            area_estado_servidor[i] += estado_servidor[i] * time_since_last_event;
+        /* Actualiza el área bajo la función indicadora de servidor ocupado para múltiples servidores. */
+        for (int i = 0; i < servidores.size(); ++i) {
+            area_estado_servidor[i] += (float)servidores[i].estado * time_since_last_event;
         }
     }
 
 
-    float expon(float media)  /* Funcion generadora de la exponencias */
+    static float expon(float media)  /* Funcion generadora de la exponencias */
     {
         /* Retorna una variable aleatoria exponencial con media "media"*/
 
-        return -media * log(lcgrand(1));
+        return (float)(-media * log(lcgrand(1)));
     }
 };
 
