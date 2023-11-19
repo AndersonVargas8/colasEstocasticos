@@ -777,8 +777,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "C:/Users/Anderson/Desktop/08. SimulacionDeColasEnCPluPlus/08. SimulacionDeColasEnCPluPlus/cmake-build-debug",
-		"source" : "C:/Users/Anderson/Desktop/08. SimulacionDeColasEnCPluPlus/08. SimulacionDeColasEnCPluPlus"
+		"build" : "C:/Users/Anderson/Desktop/colasEstocasticos/cmake-build-debug",
+		"source" : "C:/Users/Anderson/Desktop/colasEstocasticos"
 	},
 	"version" : 
 	{

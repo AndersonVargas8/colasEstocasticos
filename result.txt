@@ -1,0 +1,10 @@
+Sistema de Colas Simple (M/M/m)
+
+Tiempo promedio de llegada:       7.000 minutos
+
+Tiempo promedio de atenciï¿½n:           16.000 minutos
+
+Número de clientes:            500
+
+Número de servidores:             10
+
