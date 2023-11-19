@@ -13,12 +13,14 @@ class SistemaMMM{
         float tiempo_sig_salida;
         float tiempo_ocupado;
         int clientes_atendidos;
+        float tiempo_ultima_salida;
 
         Servidor(){
             estado = 0;
             tiempo_sig_salida = 1.0e+29;
             tiempo_ocupado = 0.0;
             clientes_atendidos = 0;
+            tiempo_ultima_salida = 0.0;
         }
     };
 
@@ -187,6 +189,9 @@ public :
         float espera;
 
         servidores[sig_servidor_salida].estado = LIBRE;
+        float tiempo_ocupado = tiempo_simulacion - servidores[sig_servidor_salida].tiempo_ultima_salida;
+        servidores[sig_servidor_salida].tiempo_ocupado = servidores[sig_servidor_salida].tiempo_ultima_salida + tiempo_ocupado;
+        servidores[sig_servidor_salida].clientes_atendidos++;
 
         if (num_clientes_cola == 0) {
             for (int i = 0; i <= servidores.size(); ++i) {
@@ -224,15 +229,15 @@ public :
     void reportes(void) {
         fprintf(resultados, "\n\nEspera promedio en la cola: %11.3f minutos\n\n",
                 total_de_esperas / num_clientes_atendidos);
-        fprintf(resultados, "Nï¿½mero promedio en cola: %10.3f\n\n",
+        fprintf(resultados, "Número promedio en cola: %10.3f\n\n",
                 area_num_entra_cola / tiempo_simulacion);
 
-        for (int i = 0; i <= num_servidores; ++i) {
-            fprintf(resultados, "Uso del servidor %d: %15.3f\n\n",
-                    i + 1, area_estado_servidor[i] / tiempo_simulacion);
+        for (int i = 0; i < servidores.size(); ++i) {
+            fprintf(resultados, "Uso del servidor %d: %15.3f %\n\n",
+                    i + 1, servidores[i].tiempo_ocupado / tiempo_simulacion *100);
         }
 
-        fprintf(resultados, "Tiempo de terminaciï¿½n de la simulaciï¿½n: %12.3f minutos", tiempo_simulacion);
+        fprintf(resultados, "Tiempo de terminación de la simulación: %12.3f minutos", tiempo_simulacion);
     }
 
     void actualizar_estad_prom_tiempo(void)  /* Actualiza los acumuladores de

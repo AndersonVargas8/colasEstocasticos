@@ -12,14 +12,12 @@ Número de servidores:              3
 
 Espera promedio en la cola:      13.586 minutos
 
-Nï¿½mero promedio en cola:      2.029
+Número promedio en cola:      2.029
 
-Uso del servidor 1:           0.000
+Uso del servidor 1:          98.953 %
 
-Uso del servidor 2:           0.000
+Uso del servidor 2:          98.337 %
 
-Uso del servidor 3:           0.000
+Uso del servidor 3:          99.282 %
 
-Uso del servidor 4:           0.000
-
-Tiempo de terminaciï¿½n de la simulaciï¿½n:     3347.175 minutos
+Tiempo de terminación de la simulación:     3347.175 minutos
