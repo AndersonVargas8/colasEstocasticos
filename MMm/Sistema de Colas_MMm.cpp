@@ -40,8 +40,8 @@ int main(void) {
     fprintf(resultados, "Sistema de Colas Simple (M/M/m)\n\n");
     fprintf(resultados, "Tiempo promedio de llegada: %11.3f minutos\n\n", media_entre_llegadas);
     fprintf(resultados, "Tiempo promedio de atenciï¿½n: %16.3f minutos\n\n", media_atencion);
-    fprintf(resultados, "Nï¿½mero de clientes: %14d\n\n", num_esperas_requerido);
-    fprintf(resultados, "Nï¿½mero de servidores: %14d\n\n", num_servidores);
+    fprintf(resultados, "Número de clientes: %14d\n\n", num_esperas_requerido);
+    fprintf(resultados, "Número de servidores: %14d\n\n", num_servidores);
 
     inicializar();
 
