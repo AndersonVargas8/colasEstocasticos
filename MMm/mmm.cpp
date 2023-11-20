@@ -24,7 +24,6 @@ class SistemaMMM{
         }
     };
 
-    static int const LIMITE_COLA = 100;  /* Capacidad maxima de la cola */
     static int const OCUPADO = 1; /* Indicador de Servidor Ocupado */
     static int const LIBRE = 0;  /* Indicador de Servidor Libre */
 
@@ -32,11 +31,12 @@ class SistemaMMM{
             num_clientes_cola, sig_servidor_salida, total_clientes_arribados, total_clientes_encolados,
             clientes_sin_encolar;
     float area_num_entra_cola, media_entre_llegadas, media_atencion,
-            tiempo_simulacion, tiempo_llegada[LIMITE_COLA + 1], tiempo_ultimo_evento, tiempo_sig_evento[3],
+            tiempo_simulacion, tiempo_ultimo_evento, tiempo_sig_evento[3],
             total_de_esperas;
     FILE  *parametros, *resultados;
 
     vector<Servidor> servidores;
+    vector<float> tiempo_llegada;
 
 public :
     int main(){
@@ -98,9 +98,10 @@ public :
         clientes_sin_encolar = 0;
         tiempo_simulacion = 0.0;
 
-        for (int i = 0; i <= LIMITE_COLA; ++i) {
+        /*for (int i = 0; i <= tiempo_llegada.size() + 1; ++i) {
             tiempo_llegada[i] = 0.0;
-        }
+        }*/
+
 
         for (int i = 1; i <= num_servidores; ++i) {
                  servidores.emplace_back();
@@ -153,10 +154,12 @@ public :
         float espera;
 
         // Programa la siguiente llegada
-        if(total_clientes_arribados <= num_esperas_requerido)
+        if(total_clientes_arribados < num_esperas_requerido)
             tiempo_sig_evento[1] = tiempo_simulacion + expon(media_entre_llegadas);
-        else
+        else{
             tiempo_sig_evento[1] = 1.0e+29;
+            return;
+        }
 
         int servidor_libre = encontrar_servidor_libre();
 
@@ -173,19 +176,12 @@ public :
             servidores[servidor_libre].estado = OCUPADO;
 
         } else {
-            if(total_clientes_encolados == 899){
-                int a = 2;
-            }
-            if (num_clientes_cola < LIMITE_COLA) {
-                total_clientes_arribados++;
-                num_clientes_cola++;
-                total_clientes_encolados++;
+            total_clientes_arribados++;
+            num_clientes_cola++;
+            total_clientes_encolados++;
 
-                tiempo_llegada[num_clientes_cola] = tiempo_simulacion;
-            }
-            else{
-                printf("\nFila llena a la hora: %f\n", tiempo_simulacion);
-            }
+            tiempo_llegada.insert(tiempo_llegada.begin(),tiempo_simulacion);
+
         }
     }
 
@@ -202,9 +198,16 @@ public :
                 servidores[i].tiempo_sig_salida = 1.0e+30;
             }
         } else {
+            //Mover clientes en la fila
+            /*for (i = 1; i < tiempo_llegada.size() - 1; ++i) {
+                tiempo_llegada[i] = tiempo_llegada[i + 1];
+            }*/
+            float tiempo_llegada_n = tiempo_llegada.back();
+            tiempo_llegada.pop_back();
+
             --num_clientes_cola;
 
-            espera = tiempo_simulacion - tiempo_llegada[1];
+            espera = tiempo_simulacion - tiempo_llegada_n;
             total_de_esperas += espera;
 
             ++num_clientes_atendidos;
@@ -213,19 +216,10 @@ public :
 
             printf("servidor libre: %d\n",servidor_libre);
 
-            if (servidor_libre != -1) {
-                servidores[servidor_libre].tiempo_sig_salida = tiempo_simulacion + expon(media_atencion);
-                servidores[servidor_libre].estado = OCUPADO;
 
+            servidores[servidor_libre].tiempo_sig_salida = tiempo_simulacion + expon(media_atencion);
+            servidores[servidor_libre].estado = OCUPADO;
 
-                //Mover clientes en la fila
-                for (i = 1; i <= num_clientes_cola; ++i) {
-                    tiempo_llegada[i] = tiempo_llegada[i + 1];
-                }
-
-            } else {
-                tiempo_sig_evento[2] = 1.0e+30;
-            }
         }
     }
 
@@ -268,7 +262,7 @@ public :
 
         cout<<"Clientes en cola: "<<num_clientes_cola<<endl;
         cout<<"siguiente salida: "<<tiempo_sig_evento[2]<<endl;
-        cout<<"tiempo simulación: "<<tiempo_simulacion<<endl;
+        cout<<"tiempo simulacion: "<<tiempo_simulacion<<endl;
         cout<<"Clientes atendidos: "<<num_clientes_atendidos<<endl<<endl;
         /* Actualiza el área bajo la función indicadora de servidor ocupado para múltiples servidores. */
         for (int i = 0; i < servidores.size(); ++i) {
@@ -286,6 +280,11 @@ public :
 };
 
 int main(){
+
     SistemaMMM mmm;
-    mmm.main();
+    try{
+        mmm.main();
+    } catch(exception e){
+        cout<<"Error, pero seguimos "<<e.what()<<endl;
+    }
 }
