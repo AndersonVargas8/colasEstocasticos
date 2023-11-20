@@ -29,7 +29,8 @@ class SistemaMMM{
     static int const LIBRE = 0;  /* Indicador de Servidor Libre */
 
     int   sig_tipo_evento, num_clientes_atendidos, num_esperas_requerido, num_eventos, num_servidores,
-            num_clientes_cola, sig_servidor_salida, total_clientes_arribados;
+            num_clientes_cola, sig_servidor_salida, total_clientes_arribados, total_clientes_encolados,
+            clientes_sin_encolar;
     float area_num_entra_cola, media_entre_llegadas, media_atencion,
             tiempo_simulacion, tiempo_llegada[LIMITE_COLA + 1], tiempo_ultimo_evento, tiempo_sig_evento[3],
             total_de_esperas;
@@ -93,6 +94,8 @@ public :
 
     void inicializar(void) {
         total_clientes_arribados = 0;
+        total_clientes_encolados = 0;
+        clientes_sin_encolar = 0;
         tiempo_simulacion = 0.0;
 
         for (int i = 0; i <= LIMITE_COLA; ++i) {
@@ -149,16 +152,17 @@ public :
     void llegada(void) {
         float espera;
 
-        total_clientes_arribados++;
         // Programa la siguiente llegada
         if(total_clientes_arribados <= num_esperas_requerido)
             tiempo_sig_evento[1] = tiempo_simulacion + expon(media_entre_llegadas);
+        else
+            tiempo_sig_evento[1] = 1.0e+29;
 
         int servidor_libre = encontrar_servidor_libre();
 
         if (servidor_libre != -1) {
-            espera = 0.0;
-            total_de_esperas += espera;
+            clientes_sin_encolar++;
+            total_clientes_arribados++;
 
             ++num_clientes_atendidos;
 
@@ -169,14 +173,18 @@ public :
             servidores[servidor_libre].estado = OCUPADO;
 
         } else {
+            if(total_clientes_encolados == 899){
+                int a = 2;
+            }
             if (num_clientes_cola < LIMITE_COLA) {
-                ++num_clientes_cola;
+                total_clientes_arribados++;
+                num_clientes_cola++;
+                total_clientes_encolados++;
 
                 tiempo_llegada[num_clientes_cola] = tiempo_simulacion;
             }
-            if (num_clientes_cola > LIMITE_COLA -1) {
-                printf("\nDesbordamiento del arreglo tiempo_llegada a la hora: %f", tiempo_simulacion);
-                exit(2);
+            else{
+                printf("\nFila llena a la hora: %f\n", tiempo_simulacion);
             }
         }
     }
@@ -222,9 +230,18 @@ public :
     }
 
     void reportes(void) {
-        fprintf(resultados, "\n\nEspera promedio en la cola: %11.3f minutos\n\n",
-                total_de_esperas / num_clientes_atendidos);
-        fprintf(resultados, "Número promedio en cola: %10.3f\n\n",
+        cout<<endl<<"total clientes encolados: "<<total_clientes_encolados<<endl;
+        cout<<endl<<"total clientes no encolados: "<<clientes_sin_encolar<<endl;
+        float promedio_esperas;
+
+        if(total_clientes_encolados == 0)
+            promedio_esperas = 0.0;
+        else
+            promedio_esperas = total_de_esperas / (float)total_clientes_encolados;
+
+        fprintf(resultados, "\n\nEspera promedio en la cola: %11.3f minutos\n\n", promedio_esperas);
+
+        fprintf(resultados, "Número promedio en cola: %10.3f personas por minuto\n\n",
                 area_num_entra_cola / tiempo_simulacion);
 
         for (int i = 0; i < servidores.size(); ++i) {
@@ -250,6 +267,8 @@ public :
         area_num_entra_cola      +=  (float)num_clientes_cola * time_since_last_event;
 
         cout<<"Clientes en cola: "<<num_clientes_cola<<endl;
+        cout<<"siguiente salida: "<<tiempo_sig_evento[2]<<endl;
+        cout<<"tiempo simulación: "<<tiempo_simulacion<<endl;
         cout<<"Clientes atendidos: "<<num_clientes_atendidos<<endl<<endl;
         /* Actualiza el área bajo la función indicadora de servidor ocupado para múltiples servidores. */
         for (int i = 0; i < servidores.size(); ++i) {
