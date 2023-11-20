@@ -4,16 +4,19 @@ Tiempo promedio de llegada:       7.000 minutos
 
 Tiempo promedio de atención:            8.000 minutos
 
-Número de clientes:              7
+Número de clientes:              8
 
 Número de servidores:              1
 
 
 
-Espera promedio en la cola:      10.160 minutos
+Espera promedio en la cola:      10.155 minutos
 
-Número promedio en cola:      1.472 personas por minuto
+Número promedio en cola:      1.545 personas por minuto
 
-Uso del servidor 1:          84.531%
+Uso del servidor 1:          87.819%
 
-Tiempo de terminación de la simulación:       41.404 minutos
+total clientes encolados: 7
+total clientes no encolados: 1
+
+Tiempo de terminación de la simulación:       52.582 minutos

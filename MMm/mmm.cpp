@@ -214,7 +214,7 @@ public :
 
             int servidor_libre = encontrar_servidor_libre();
 
-            printf("servidor libre: %d\n",servidor_libre);
+            //printf("servidor libre: %d\n",servidor_libre);
 
 
             servidores[servidor_libre].tiempo_sig_salida = tiempo_simulacion + expon(media_atencion);
@@ -224,14 +224,12 @@ public :
     }
 
     void reportes(void) {
-        cout<<endl<<"total clientes encolados: "<<total_clientes_encolados<<endl;
-        cout<<endl<<"total clientes no encolados: "<<clientes_sin_encolar<<endl;
         float promedio_esperas;
 
         if(total_clientes_encolados == 0)
             promedio_esperas = 0.0;
         else
-            promedio_esperas = total_de_esperas / (float)total_clientes_encolados;
+            promedio_esperas = total_de_esperas / (float)num_clientes_atendidos;
 
         fprintf(resultados, "\n\nEspera promedio en la cola: %11.3f minutos\n\n", promedio_esperas);
 
@@ -242,6 +240,9 @@ public :
             fprintf(resultados, "Uso del servidor %d: %15.3f%\n\n",
                     i + 1, servidores[i].tiempo_ocupado / tiempo_simulacion *100);
         }
+
+        fprintf(resultados, "total clientes encolados: %d\n",total_clientes_encolados);
+        fprintf(resultados, "total clientes no encolados: %d\n\n",clientes_sin_encolar);
 
         fprintf(resultados, "Tiempo de terminación de la simulación: %12.3f minutos", tiempo_simulacion);
     }
@@ -260,10 +261,10 @@ public :
         /* Actualiza el area bajo la funcion de numero_en_cola */
         area_num_entra_cola      +=  (float)num_clientes_cola * time_since_last_event;
 
-        cout<<"Clientes en cola: "<<num_clientes_cola<<endl;
+        /*cout<<"Clientes en cola: "<<num_clientes_cola<<endl;
         cout<<"siguiente salida: "<<tiempo_sig_evento[2]<<endl;
         cout<<"tiempo simulacion: "<<tiempo_simulacion<<endl;
-        cout<<"Clientes atendidos: "<<num_clientes_atendidos<<endl<<endl;
+        cout<<"Clientes atendidos: "<<num_clientes_atendidos<<endl<<endl;*/
         /* Actualiza el área bajo la función indicadora de servidor ocupado para múltiples servidores. */
         for (int i = 0; i < servidores.size(); ++i) {
             servidores[i].tiempo_ocupado += (float)servidores[i].estado * time_since_last_event;
@@ -287,4 +288,5 @@ int main(){
     } catch(exception e){
         cout<<"Error, pero seguimos "<<e.what()<<endl;
     }
+    cout<<"Simulacion terminada exitosamente";
 }
